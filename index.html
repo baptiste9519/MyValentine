@@ -46,6 +46,7 @@
       box-shadow: 0 8px 18px rgba(0,0,0,.12);
       user-select:none;
       touch-action:manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
     #yes{ background:#ff2d55; color:white; }
     #no { background:#111; color:white; position:relative; }
@@ -77,6 +78,7 @@
       cursor:pointer;
       user-select:none;
       touch-action:manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .env-body{
@@ -164,7 +166,6 @@
       display:none;
     }
     .continue.show{ display:inline-block; }
-
   </style>
 </head>
 <body>
@@ -256,7 +257,7 @@
       spawnHearts(18);
     }
 
-    // Envelope interaction
+    // Envelope interaction (✅ mobile-proof)
     const envelope = document.getElementById("envelope");
     const btnContinue = document.getElementById("btnContinue");
 
@@ -269,18 +270,27 @@
         spawnHearts(14);
         btnContinue.classList.add("show");
       } else {
-        // second tap/click after open -> continue
         goToAsk();
       }
     }
 
+    // Desktop
     envelope.addEventListener("click", openEnvelope);
-    envelope.addEventListener("pointerdown", (e) => { /* better mobile feel */ });
     envelope.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openEnvelope(); }
     });
 
+    // Mobile (iOS/Android)
+    envelope.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      openEnvelope();
+    }, { passive: false });
+
     btnContinue.addEventListener("click", goToAsk);
+    btnContinue.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      goToAsk();
+    }, { passive: false });
 
     // Page 2 buttons logic
     const yesBtn = document.getElementById("yes");
@@ -318,6 +328,13 @@
       spawnHearts(10);
       result.textContent = "Ok ok… mais j’espère un oui 😇";
     });
+
+    // Mobile: make "Hmm..." reliably dodge taps too
+    noBtn.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      moveNoButton();
+    }, { passive: false });
   </script>
 </body>
 </html>
+
