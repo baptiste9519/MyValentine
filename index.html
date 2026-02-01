@@ -4,337 +4,293 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>💘 Valentine ?</title>
+
   <style>
     :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+
     body{
-      margin:0; height:100vh; display:grid; place-items:center;
+      margin:0;
+      min-height:100svh;
+      display:grid;
+      place-items:center;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       background: radial-gradient(circle at top, #ffe1ec, #fff);
       overflow:hidden;
     }
-    .hearts{ position:fixed; inset:0; pointer-events:none; overflow:hidden; }
+
+    /* Hearts */
+    .hearts{ position:fixed; inset:0; pointer-events:none; }
     .heart{
-      position:absolute; font-size:18px; opacity:.9;
+      position:absolute;
       animation: floatUp linear forwards;
-      filter: drop-shadow(0 6px 10px rgba(0,0,0,.12));
+      font-size:18px;
     }
     @keyframes floatUp{
       from{ transform: translateY(0) scale(.9); opacity:0; }
       10%{ opacity:1; }
-      to{ transform: translateY(-120vh) scale(1.25); opacity:0; }
+      to{ transform: translateY(-120vh) scale(1.2); opacity:0; }
     }
 
+    /* Card */
     .card{
       width:min(560px, 92vw);
-      background: rgba(255,255,255,.82);
-      border:1px solid rgba(0,0,0,.06);
+      background: rgba(255,255,255,.85);
       border-radius:24px;
       padding:28px;
-      box-shadow: 0 12px 40px rgba(0,0,0,.12);
+      box-shadow:0 12px 40px rgba(0,0,0,.15);
       text-align:center;
-      backdrop-filter: blur(8px);
     }
-    h1{ margin:0 0 10px; font-size:clamp(26px, 4vw, 34px); }
-    p{ margin:0 0 18px; font-size:clamp(16px, 2.4vw, 18px); opacity:.9; }
-    .row{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+
+    h1{ margin:0 0 10px; font-size:clamp(24px,4vw,34px); }
+    p{ margin:0 0 18px; font-size:clamp(16px,2.4vw,18px); }
+
+    .row{
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+
     button{
-      border:0; border-radius:14px;
+      border:0;
+      border-radius:14px;
       padding:14px 18px;
-      font-size:18px; font-weight:700;
+      font-size:18px;
+      font-weight:700;
       cursor:pointer;
-      transition: transform .12s ease, box-shadow .12s ease;
-      box-shadow: 0 8px 18px rgba(0,0,0,.12);
+      box-shadow:0 8px 18px rgba(0,0,0,.12);
+      transition: transform .25s ease, left .25s ease, top .25s ease;
       user-select:none;
       touch-action:manipulation;
       -webkit-tap-highlight-color: transparent;
     }
-    #yes{ background:#ff2d55; color:white; }
-    #no { background:#111; color:white; position:relative; }
-    button:active{ transform: translateY(1px) scale(.99); box-shadow: 0 5px 12px rgba(0,0,0,.12); }
-    #result{ margin-top:18px; font-size:18px; font-weight:650; }
-    small{ display:block; margin-top:10px; opacity:.6; }
 
-    /* --- Pages --- */
+    button:active{ transform:scale(.98); }
+
+    #yes{
+      background:#ff2d55;
+      color:white;
+    }
+
+    #no{
+      background:#111;
+      color:white;
+      position:fixed;
+    }
+
+    #result{
+      margin-top:18px;
+      font-size:18px;
+      font-weight:600;
+    }
+
+    small{ opacity:.6; }
+
+    /* Pages */
     .page{ display:none; }
     .page.active{ display:block; }
 
-    /* --- Intro envelope --- */
-    .intro-wrap{
-      display:grid;
-      place-items:center;
-      gap:16px;
-      padding:8px;
-    }
-    .hint{
-      font-size:16px;
-      opacity:.75;
-      margin:0;
-    }
-
+    /* Envelope intro */
     .envelope-stage{
-      width:min(420px, 90vw);
-      height:260px;
+      width:min(420px,90vw);
+      height:240px;
+      margin:16px auto;
       position:relative;
       cursor:pointer;
-      user-select:none;
-      touch-action:manipulation;
-      -webkit-tap-highlight-color: transparent;
     }
 
     .env-body{
-      position:absolute; inset:0;
-      background: linear-gradient(180deg, #d8142f, #b50f24);
+      position:absolute;
+      inset:0;
+      background:#d8142f;
       border-radius:18px;
-      box-shadow: 0 20px 40px rgba(0,0,0,.18);
       overflow:hidden;
     }
 
-    .env-shadow{
-      position:absolute; inset:0;
-      border-radius:18px;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.14);
-      pointer-events:none;
-    }
-
-    /* flap */
     .env-flap{
-      position:absolute; left:0; right:0; top:0;
+      position:absolute;
+      inset:0 0 auto 0;
       height:55%;
-      background: linear-gradient(180deg, #ff2d55, #d8142f);
-      clip-path: polygon(0 0, 100% 0, 50% 85%);
-      transform-origin: top center;
-      transition: transform .55s cubic-bezier(.2,.9,.2,1);
-      filter: drop-shadow(0 8px 10px rgba(0,0,0,.2));
+      background:#ff2d55;
+      clip-path:polygon(0 0,100% 0,50% 85%);
+      transform-origin:top;
+      transition:transform .6s ease;
     }
 
-    /* pocket triangle */
-    .env-pocket{
-      position:absolute; left:0; right:0; bottom:0;
-      height:70%;
-      background: linear-gradient(180deg, #c3122a, #a50e20);
-      clip-path: polygon(0 100%, 50% 25%, 100% 100%);
-      opacity:.95;
-    }
-
-    /* letter */
     .letter{
       position:absolute;
       left:50%;
-      width:88%;
-      height:78%;
-      transform: translateX(-50%);
       bottom:18px;
-      background: #fff;
-      border-radius:14px;
-      box-shadow: 0 14px 26px rgba(0,0,0,.18);
-      border: 1px solid rgba(0,0,0,.06);
+      width:86%;
+      height:70%;
+      background:white;
+      border-radius:12px;
+      transform:translateX(-50%) translateY(40px);
+      opacity:0;
+      transition:.6s ease;
       display:grid;
       place-items:center;
-      padding:18px;
-      text-align:center;
-      transition: transform .65s cubic-bezier(.2,.9,.2,1), opacity .4s ease;
-      opacity: 0;
-      transform: translateX(-50%) translateY(40px);
+      padding:16px;
     }
 
-    .letter .title{
-      font-weight:800;
-      font-size:18px;
-      margin:0 0 8px;
-    }
-    .letter .question{
-      font-size:22px;
-      margin:0;
-      line-height:1.15;
-    }
-    .letter .mini{
-      margin-top:10px;
-      opacity:.65;
-      font-size:14px;
-    }
-
-    /* Open state */
-    .opened .env-flap{ transform: rotateX(180deg); }
+    .opened .env-flap{ transform:rotateX(180deg); }
     .opened .letter{
       opacity:1;
-      transform: translateX(-50%) translateY(-34px);
+      transform:translateX(-50%) translateY(-30px);
     }
 
-    /* continue button shown after open */
-    .continue{
-      margin-top:6px;
+    /* GIF overlays */
+    .gif-overlay{
+      position:fixed;
+      inset:0;
       display:none;
+      place-items:center;
+      background:rgba(0,0,0,.35);
+      z-index:9999;
+      pointer-events:none;
     }
-    .continue.show{ display:inline-block; }
+
+    .gif-overlay img{
+      max-width:min(320px,80vw);
+      border-radius:12px;
+      box-shadow:0 20px 40px rgba(0,0,0,.4);
+    }
   </style>
 </head>
+
 <body>
-  <div class="hearts" id="hearts"></div>
 
-  <!-- PAGE 1: Intro -->
-  <div class="card page active" id="pageIntro">
-    <div class="intro-wrap">
-      <h1>💌 Pour toi</h1>
-      <p class="hint">Ouvre l’enveloppe ❤️</p>
+<div class="hearts" id="hearts"></div>
 
-      <div class="envelope-stage" id="envelope" aria-label="Ouvrir l’enveloppe" role="button" tabindex="0">
-        <div class="env-body">
-          <div class="letter" id="letter">
-            <div>
-              <p class="title">Question très importante</p>
-              <p class="question" id="letterQ">Est-ce que tu veux être ma Valentine le <b>14 février</b> ?</p>
-              <div class="mini">(tape encore pour continuer)</div>
-            </div>
-          </div>
+<!-- NOOO GIF -->
+<div id="nooo-overlay" class="gif-overlay">
+  <img src="./GIF/nooo.gif" alt="NOOO God Please Nooo">
+</div>
 
-          <div class="env-pocket"></div>
-          <div class="env-flap"></div>
-          <div class="env-shadow"></div>
-        </div>
+<!-- YES GIF -->
+<div id="yes-overlay" class="gif-overlay">
+  <img src="./GIF/yes.gif" alt="YES Celebration">
+</div>
+
+<!-- PAGE 1 -->
+<div class="card page active" id="pageIntro">
+  <h1>💌 Pour toi</h1>
+  <p>Ouvre l’enveloppe ❤️</p>
+
+  <div class="envelope-stage" id="envelope">
+    <div class="env-body">
+      <div class="letter">
+        <p><b>Question très importante</b></p>
+        <p>Est-ce que tu veux être ma Valentine le <b>15 février ? (Parce que j'ai un taf de merde)</b></p>
+        <small>(tape encore)</small>
       </div>
-
-      <button class="continue" id="btnContinue">Continuer ➜</button>
-      <small>(promis c’est sérieux)</small>
+      <div class="env-flap"></div>
     </div>
   </div>
+</div>
 
-  <!-- PAGE 2: Question + boutons -->
-  <div class="card page" id="pageAsk">
-    <h1>💌 Question très importante</h1>
-    <p id="q">Est-ce que tu veux être ma Valentine le <b>14 février</b> ?</p>
+<!-- PAGE 2 -->
+<div class="card page" id="pageAsk">
+  <h1>💌 Question très importante</h1>
+  <p>Est-ce que tu veux être ma Valentine le <b>14 février</b> ?</p>
 
-    <div class="row">
-      <button id="yes">Oui 😍</button>
-      <button id="no">Hmm… 🙃</button>
-    </div>
-
-    <div id="result"></div>
-    <small>(promis c’est sérieux)</small>
+  <div class="row">
+    <button id="yes">Oui 😍</button>
+    <button id="no">Hmm… 🙃</button>
   </div>
 
-  <script>
-    // Personnalise ici 👇
-    const name = ""; // ex: "Léa"
-    const from = ""; // ex: "Ton [prénom]"
-    const dateText = "14 février";
+  <div id="result"></div>
+  <small>(promis c’est sérieux)</small>
+</div>
 
-    const hearts = document.getElementById("hearts");
-    function spawnHearts(count = 26){
-      const emojis = ["💖","💘","💝","💕","❤️","😍"];
-      for(let i=0;i<count;i++){
-        const s = document.createElement("div");
-        s.className = "heart";
-        s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-        s.style.left = Math.random()*100 + "vw";
-        s.style.bottom = "-5vh";
-        const dur = 2.2 + Math.random()*2.2;
-        s.style.animationDuration = dur + "s";
-        s.style.fontSize = (14 + Math.random()*22) + "px";
-        s.style.animationDelay = (Math.random()*0.25) + "s";
-        hearts.appendChild(s);
-        setTimeout(() => s.remove(), (dur + 0.5)*1000);
-      }
-    }
+<script>
+  const pageIntro = document.getElementById("pageIntro");
+  const pageAsk = document.getElementById("pageAsk");
+  const envelope = document.getElementById("envelope");
+  const noBtn = document.getElementById("no");
+  const yesBtn = document.getElementById("yes");
+  const result = document.getElementById("result");
+  const hearts = document.getElementById("hearts");
+  const noooOverlay = document.getElementById("nooo-overlay");
+  const yesOverlay = document.getElementById("yes-overlay");
 
-    // Set text (intro letter + page 2)
-    const q = document.getElementById("q");
-    const letterQ = document.getElementById("letterQ");
-    if (name) {
-      q.innerHTML = `${name}, est-ce que tu veux être ma Valentine le <b>${dateText}</b> ?`;
-      letterQ.innerHTML = `${name}, est-ce que tu veux être ma Valentine le <b>${dateText}</b> ?`;
+  let opened = false;
+  let hmmClicks = 0;
+  let yesScale = 1;
+
+  envelope.addEventListener("click", () => {
+    if (!opened){
+      opened = true;
+      envelope.classList.add("opened");
     } else {
-      q.innerHTML = `Est-ce que tu veux être ma Valentine le <b>${dateText}</b> ?`;
-      letterQ.innerHTML = `Est-ce que tu veux être ma Valentine le <b>${dateText}</b> ?`;
-    }
-
-    // Page switching
-    const pageIntro = document.getElementById("pageIntro");
-    const pageAsk   = document.getElementById("pageAsk");
-
-    function goToAsk(){
       pageIntro.classList.remove("active");
       pageAsk.classList.add("active");
-      spawnHearts(18);
+      placeNo();
     }
+  });
 
-    // Envelope interaction (✅ mobile-proof)
-    const envelope = document.getElementById("envelope");
-    const btnContinue = document.getElementById("btnContinue");
+  function placeNo(){
+    const pad = 16;
+    const vw = document.documentElement.clientWidth;
+    const vh = document.documentElement.clientHeight;
+    const bw = noBtn.offsetWidth;
+    const bh = noBtn.offsetHeight;
 
-    let opened = false;
+    const x = pad + Math.random() * (vw - bw - pad*2);
+    const y = pad + Math.random() * (vh - bh - pad*2);
 
-    function openEnvelope(){
-      if (!opened){
-        opened = true;
-        envelope.classList.add("opened");
-        spawnHearts(14);
-        btnContinue.classList.add("show");
-      } else {
-        goToAsk();
-      }
+    noBtn.style.left = `${x}px`;
+    noBtn.style.top = `${y}px`;
+  }
+
+  function showOverlay(el, duration = 1500){
+    el.style.display = "grid";
+    setTimeout(() => el.style.display = "none", duration);
+  }
+
+  function spawnHearts(n){
+    const e = ["💖","💘","💕","❤️"];
+    for(let i=0;i<n;i++){
+      const h = document.createElement("div");
+      h.className="heart";
+      h.textContent = e[Math.floor(Math.random()*e.length)];
+      h.style.left = Math.random()*100+"vw";
+      h.style.bottom="-10px";
+      h.style.animationDuration = (2+Math.random()*2)+"s";
+      hearts.appendChild(h);
+      setTimeout(()=>h.remove(),3000);
     }
+  }
 
-    // Desktop
-    envelope.addEventListener("click", openEnvelope);
-    envelope.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openEnvelope(); }
-    });
+  noBtn.addEventListener("click", e=>{
+    e.preventDefault();
+    hmmClicks++;
+    showOverlay(noooOverlay, 1500);
+    placeNo();
+    yesScale = Math.min(1 + hmmClicks*0.08, 1.7);
+    yesBtn.style.transform = `scale(${yesScale})`;
+    spawnHearts(6);
+  });
 
-    // Mobile (iOS/Android)
-    envelope.addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      openEnvelope();
-    }, { passive: false });
+  noBtn.addEventListener("touchstart", e=>{
+    e.preventDefault();
+    noBtn.click();
+  }, {passive:false});
 
-    btnContinue.addEventListener("click", goToAsk);
-    btnContinue.addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      goToAsk();
-    }, { passive: false });
+  yesBtn.addEventListener("click", ()=>{
+    showOverlay(yesOverlay, 5000);
+    spawnHearts(30);
+    result.textContent = "YEEEES 😭💘 Rendez-vous le 14 février !";
+    noBtn.style.opacity = .4;
+    noBtn.disabled = true;
+  });
 
-    // Page 2 buttons logic
-    const yesBtn = document.getElementById("yes");
-    const noBtn  = document.getElementById("no");
-    const result = document.getElementById("result");
+  yesBtn.addEventListener("touchstart", e=>{
+    e.preventDefault();
+    yesBtn.click();
+  }, {passive:false});
+</script>
 
-    yesBtn.addEventListener("click", () => {
-      spawnHearts(40);
-      result.textContent = from
-        ? `YEEEES 😭💘 Rendez-vous le ${dateText}. — ${from}`
-        : `YEEEES 😭💘 Rendez-vous le ${dateText} !`;
-      noBtn.disabled = true;
-      noBtn.style.opacity = .4;
-      noBtn.style.cursor = "not-allowed";
-    });
-
-    function moveNoButton(){
-      const pad = 12;
-      const bw = noBtn.offsetWidth || 120;
-      const bh = noBtn.offsetHeight || 44;
-      const maxX = window.innerWidth  - bw - pad;
-      const maxY = window.innerHeight - bh - pad;
-
-      const x = Math.max(pad, Math.random()*maxX);
-      const y = Math.max(pad, Math.random()*maxY);
-
-      noBtn.style.position = "fixed";
-      noBtn.style.left = x + "px";
-      noBtn.style.top  = y + "px";
-    }
-
-    noBtn.addEventListener("mouseenter", moveNoButton);
-    noBtn.addEventListener("pointerdown", (e) => { e.preventDefault(); moveNoButton(); });
-    noBtn.addEventListener("click", () => {
-      spawnHearts(10);
-      result.textContent = "Ok ok… mais j’espère un oui 😇";
-    });
-
-    // Mobile: make "Hmm..." reliably dodge taps too
-    noBtn.addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      moveNoButton();
-    }, { passive: false });
-  </script>
 </body>
 </html>
-
